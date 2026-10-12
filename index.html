@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Gaming World — play quick browser games.">
+  <title>Gaming World | Play, Level Up</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Keep the account screen above the site until a player authenticates. */
+    .hidden { display: none !important; }
+    .modal-backdrop { position: fixed; inset: 0; z-index: 99999; display: flex; align-items: center; justify-content: center; padding: 18px; overflow-y: auto; background: rgba(4, 7, 20, .94); }
+    .modal-backdrop.hidden { display: none !important; }
+    .modal-panel { position: relative; width: min(100%, 460px); max-height: calc(100vh - 36px); overflow-y: auto; }
+    body.auth-required { overflow: hidden; }
+    body.auth-required > header, body.auth-required > main, body.auth-required > footer { pointer-events: none; user-select: none; }
+    #accountModal .modal-close.auth-lock { display: none !important; }
+    .auth-notice { margin: 0 0 14px; color: #d9e4ff; font-size: .9rem; text-align: center; }
+  </style>
+
+<style>
+    /* Distinct, colorful game-logo badges for every arcade card. */
+    .game-art { position: relative; overflow: hidden; isolation: isolate; }
+    .game-art::before { content: ""; position: absolute; inset: 0; z-index: -1; background: radial-gradient(circle at 50% 48%, rgba(43,255,231,.20), transparent 52%), linear-gradient(135deg, rgba(95,60,255,.12), transparent 65%); }
+    .number-preview.game-logo, .target-preview.game-logo { display:flex; align-items:center; justify-content:center; margin: 10px auto; width: 112px; height: 112px; border-radius: 28px; font-size: 4rem; line-height:1; background: linear-gradient(145deg, rgba(34,245,224,.20), rgba(114,78,255,.30)); border: 1px solid rgba(51,255,231,.65); box-shadow: 0 0 28px rgba(37,245,224,.20), inset 0 0 20px rgba(255,255,255,.06); text-shadow: 0 5px 18px rgba(0,0,0,.35); transform: rotate(-3deg); }
+    .target-preview.game-logo { width: 112px; height:112px; }
+    .game-card:hover .game-logo { transform: rotate(3deg) scale(1.07); transition: transform .22s ease; }
+    .game-number { border-radius: 999px; padding: 5px 9px; background: rgba(41,245,224,.10); border: 1px solid rgba(41,245,224,.28); }
+    @media (max-width: 480px) { .number-preview.game-logo, .target-preview.game-logo { width: 88px; height:88px; font-size:3.2rem; } }
+</style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand-block">
+      <a class="logo" href="#home" aria-label="Gaming World home"><span class="logo-mark">G</span> GAMING <span>WORLD</span></a>
+      <p class="creator-credit">Created by <strong>PrudvikSai Katragadda</strong></p>
+    </div>
+    <nav class="main-nav" aria-label="Main navigation">
+      <a href="#home">Home</a>
+      <a href="#games">Games</a>
+      <a href="#about">About</a>
+    </nav>
+    <div class="account-area">
+      <span id="welcomeText" class="welcome-text" aria-live="polite"></span>
+      <button id="accountButton" class="button button-outline" type="button">Log in / Sign up</button>
+      <button id="logoutButton" class="button button-outline hidden" type="button">Log out</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="hero-content">
+        <p class="eyebrow">YOUR NEXT HIGH SCORE STARTS HERE</p>
+        <h1>ENTER THE<br><span>GAMING WORLD</span></h1>
+        <p class="hero-copy">Quick games. Big challenges. Your next personal best is one click away.</p>
+        <a class="button button-primary" href="#games">PLAY NOW <span aria-hidden="true">↗</span></a>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+        <div class="hero-controller">⌁</div>
+        <div class="pixel pixel-one"></div><div class="pixel pixel-two"></div><div class="pixel pixel-three"></div>
+        <div class="hero-label">PLAYER 001<br><span>READY</span></div>
+      </div>
+    </section>
+
+    <section class="stats-row" aria-label="Website highlights">
+      <div><strong>40</strong><span>PLAYABLE GAMES</span></div>
+      <div><strong>00</strong><span>DOWNLOADS NEEDED</span></div>
+      <div><strong>∞</strong><span>REPLAY VALUE</span></div>
+    </section>
+
+    <section class="games-section section-wrap" id="games">
+      <div class="section-heading">
+        <div><p class="eyebrow">CHOOSE YOUR CHALLENGE</p><h2>ARCADE <span>ZONE</span></h2></div>
+        <p class="section-note">Pick a game and start playing right in your browser.</p>
+      </div>
+      <div class="game-grid">
+        <article class="game-card clicker-card">
+          <div class="game-art clicker-art"><span class="art-tag">REACTION</span><div class="target-preview game-logo" role="img" aria-label="Neon Clicker logo">🎯</div><span class="art-bottom">TAP • SCORE • REPEAT</span></div>
+          <div class="game-card-body">
+            <div class="game-title-row"><h3>Neon Clicker</h3><span class="game-number">01</span></div>
+            <p>Hit the glowing target as many times as you can before time runs out.</p>
+            <div class="game-meta"><span>⏱ 20 seconds</span><span>★ High score saved here</span></div>
+            <button class="button button-primary game-launch" data-game="clicker" type="button">PLAY GAME <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+        <article class="game-card number-card">
+          <div class="game-art number-art"><span class="art-tag">BRAIN POWER</span><div class="number-preview game-logo" role="img" aria-label="Number Hunter logo">🔢</div><span class="art-bottom">THINK • GUESS • WIN</span></div>
+          <div class="game-card-body">
+            <div class="game-title-row"><h3>Number Hunter</h3><span class="game-number">02</span></div>
+            <p>Find the secret number from 1 to 100 using the fewest guesses possible.</p>
+            <div class="game-meta"><span>♟ 1 player</span><span>⚡ Unlimited tries</span></div>
+            <button class="button button-primary game-launch" data-game="number" type="button">PLAY GAME <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+        <article class="game-card">
+          <div class="game-art number-art"><span class="art-tag">GAME ICON</span><div class="number-preview game-logo" role="img" aria-label="Memory Match logo">🧠</div><span class="art-bottom">MEMORY MATCH • PLAY NOW</span></div>
+          <div class="game-card-body">
+            <div class="game-title-row"><h3>Memory Match</h3><span class="game-number">03</span></div>
+            <p>Remember the sequence of lights and repeat it.</p>
+            <div class="game-meta"><span>♟ 1 player</span><span>⚡ Replay anytime</span></div>
+            <button class="button button-primary game-launch" data-game="memory" type="button">PLAY GAME <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+        <article class="game-card">
+          <div class="game-art number-art"><span class="art-tag">GAME ICON</span><div class="number-preview game-logo" role="img" aria-label="Rock Paper Scissors logo">✊</div><span class="art-bottom">ROCK PAPER SCISSORS • PLAY NOW</span></div>
+          <div class="game-card-body">
+            <div class="game-title-row"><h3>Rock Paper Scissors</h3><span class="game-number">04</span></div>
+            <p>Choose your move and beat the computer.</p>
+            <div class="game-meta"><span>♟ 1 player</span><span>⚡ Replay anytime</span></div>
+            <button class="button button-primary game-launch" data-game="rps" type="button">PLAY GAME <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+        <article class="game-card">
+          <div class="game-art number-art"><span class="art-tag">GAME ICON</span><div class="number-preview game-logo" role="img" aria-label="Quick Math logo">➗</div><span class="art-bottom">QUICK MATH • PLAY NOW</span></div>
+          <div class="game-card-body">
+            <div class="game-title-row"><h3>Quick Math</h3><span class="game-number">05</span></div>
+            <p>Solve as many quick calculations as you can.</p>
+            <div class="game-meta"><span>♟ 1 player</span><span>⚡ Replay anytime</span></div>
+            <button class="button button-primary game-launch" data-game="math" type="button">PLAY GAME <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+        <article class="game-card">
+          <div class="game-art number-art"><span class="art-tag">GAME ICON</span><div class="number-preview game-logo" role="img" aria-label="Word Scramble logo">🔤</div><span class="art-bottom">WORD SCRAMBLE • PLAY NOW</span></div>
+          <div class="game-card-body">
+            <div class="game-title-row"><h3>Word Scramble</h3><span class="game-number">06</span></div>
+            <p>Unscramble the mixed-up word.</p>
+            <div class="game-meta"><span>♟ 1 player</span><span>⚡ Replay anytime</span></div>
+            <button class="button button-primary game-launch" data-game="word" type="button">PLAY GAME <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+        <article class="game-card">
+          <div class="game-art number-art"><span class="art-tag">GAME ICON</span><div class="number-preview game-logo" role="img" aria-label="Color Challenge logo">🎨</div><span class="art-bottom">COLOR CHALLENGE • PLAY NOW</span></div>
+          <div class="game-card-body">
+            <div class="game-title-row"><h3>Color Challenge</h3><span class="game-number">07</span></div>
+            <p>Choose the color named by the challenge.</p>
+            <div class="game-meta"><span>♟ 1 player</span><span>⚡ Replay anytime</span></div>
+            <button class="button button-primary game-launch" data-game="color" type="button">PLAY GAME <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+        <article class="game-card">
+          <div class="game-art number-art"><span class="art-tag">GAME ICON</span><div class="number-preview game-logo" role="img" aria-label="Typing Sprint logo">⌨️</div><span class="art-bottom">TYPING SPRINT • PLAY NOW</span></div>
+          <div class="game-card-body">
+            <div class="game-title-row"><h3>Typing Sprint</h3><span class="game-number">08</span></div>
+            <p>Type the displayed word accurately.</p>
+            <div class="game-meta"><span>♟ 1 player</span><span>⚡ Replay anytime</span></div>
+            <button class="button button-primary game-launch" data-game="typing" type="button">PLAY GAME <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+        <article class="game-card">
+          <div class="game-art number-art"><span class="art-tag">GAME ICON</span><div class="number-preview game-logo" role="img" aria-label="Higher or Lower logo">📈</div><span class="art-bottom">HIGHER OR LOWER • PLAY NOW</span></div>
+          <div class="game-card-body">
+            <div class="game-title-row"><h3>Higher or Lower</h3><span class="game-number">09</span></div>
+            <p>Guess whether the next number is higher or lower.</p>
+            <div class="game-meta"><span>♟ 1 player</span><span>⚡ Replay anytime</span></div>
+            <button class="button button-primary game-launch" data-game="higher" type="button">PLAY GAME <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+        <article class="game-card">
+          <div class="game-art number-art"><span class="art-tag">GAME ICON</span><div class="number-preview game-logo" role="img" aria-label="Dice Duel logo">🎲</div><span class="art-bottom">DICE DUEL • PLAY NOW</span></div>
+          <div class="game-card-body">
+            <div class="game-title-row"><h3>Dice Duel</h3><span class="game-number">10</span></div>
+            <p>Roll against the computer and try to score higher.</p>
+            <div class="game-meta"><span>♟ 1 player</span><span>⚡ Replay anytime</span></div>
+            <button class="button button-primary game-launch" data-game="dice" type="button">PLAY GAME <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+        <article class="game-card">
+          <div class="game-art number-art"><span class="art-tag">GAME ICON</span><div class="number-preview game-logo" role="img" aria-label="Coin Flip Streak logo">🪙</div><span class="art-bottom">COIN FLIP STREAK • PLAY NOW</span></div>
+          <div class="game-card-body">
+            <div class="game-title-row"><h3>Coin Flip Streak</h3><span class="game-number">11</span></div>
+            <p>Predict heads or tails and build a streak.</p>
+            <div class="game-meta"><span>♟ 1 player</span><span>⚡ Replay anytime</span></div>
+            <button class="button button-primary game-launch" data-game="coin" type="button">PLAY GAME <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+        <article class="game-card">
+          <div class="game-art number-art"><span class="art-tag">GAME ICON</span><div class="number-preview game-logo" role="img" aria-label="Odd One Out logo">🧐</div><span class="art-bottom">ODD ONE OUT • PLAY NOW</span></div>
+          <div class="game-card-body">
+            <div class="game-title-row"><h3>Odd One Out</h3><span class="game-number">12</span></div>
+            <p>Find the item that doesn't belong.</p>
+            <div class="game-meta"><span>♟ 1 player</span><span>⚡ Replay anytime</span></div>
+            <button class="button button-primary game-launch" data-game="odd" type="button">PLAY GAME <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+        <article class="game-card">
+          <div class="game-art number-art"><span class="art-tag">GAME ICON</span><div class="number-preview game-logo" role="img" aria-label="Pattern Puzzle logo">🧩</div><span class="art-bottom">PATTERN PUZZLE • PLAY NOW</span></div>
+          <div class="game-card-body">
+            <div class="game-title-row"><h3>Pattern Puzzle</h3><span class="game-number">13</span></div>
+            <p>Work out the next number in the pattern.</p>
+            <div class="game-meta"><span>♟ 1 player</span><span>⚡ Replay anytime</span></div>
+            <button class="button button-primary game-launch" data-game="pattern" type="button">PLAY GAME <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+        <article class="game-card">
+          <div class="game-art number-art"><span class="art-tag">GAME ICON</span><div class="number-preview game-logo" role="img" aria-label="Reaction Test logo">⚡</div><span class="art-bottom">REACTION TEST • PLAY NOW</span></div>
+          <div class="game-card-body">
+            <div class="game-title-row"><h3>Reaction Test</h3><span class="game-number">14</span></div>
+            <p>Wait for green, then click as quickly as possible.</p>
+            <div class="game-meta"><span>♟ 1 player</span><span>⚡ Replay anytime</span></div>
+            <button class="button button-primary game-launch" data-game="reaction" type="button">PLAY GAME <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+        <article class="game-card">
+          <div class="game-art number-art"><span class="art-tag">GAME ICON</span><div class="number-preview game-logo" role="img" aria-label="Mini Trivia logo">💡</div><span class="art-bottom">MINI TRIVIA • PLAY NOW</span></div>
+          <div class="game-card-body">
+            <div class="game-title-row"><h3>Mini Trivia</h3><span class="game-number">15</span></div>
+            <p>Answer a quick general-knowledge question.</p>
+            <div class="game-meta"><span>♟ 1 player</span><span>⚡ Replay anytime</span></div>
+            <button class="button button-primary game-launch" data-game="trivia" type="button">PLAY GAME <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+        <article class="game-card">
+          <div class="game-art number-art"><span class="art-tag">GAME ICON</span><div class="number-preview game-logo" role="img" aria-label="Anagram Arena logo">🔠</div><span class="art-bottom">ANAGRAM ARENA • PLAY NOW</span></div>
+          <div class="game-card-body">
+            <div class="game-title-row"><h3>Anagram Arena</h3><span class="game-number">16</span></div>
+            <p>Rearrange letters to make a word.</p>
+            <div class="game-meta"><span>♟ 1 player</span><span>⚡ Replay anytime</span></div>
+            <button class="button button-primary game-launch" data-game="anagram" type="button">PLAY GAME <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+        <article class="game-card">
+          <div class="game-art number-art"><span class="art-tag">GAME ICON</span><div class="number-preview game-logo" role="img" aria-label="Target 21 logo">🃏</div><span class="art-bottom">TARGET 21 • PLAY NOW</span></div>
+          <div class="game-card-body">
+            <div class="game-title-row"><h3>Target 21</h3><span class="game-number">17</span></div>
+            <p>Get as close to 21 as you can without going over.</p>
+            <div class="game-meta"><span>♟ 1 player</span><span>⚡ Replay anytime</span></div>
+            <button class="button button-primary game-launch" data-game="target21" type="button">PLAY GAME <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+        <article class="game-card">
+          <div class="game-art number-art"><span class="art-tag">GAME ICON</span><div class="number-preview game-logo" role="img" aria-label="Number Sequence logo">🔣</div><span class="art-bottom">NUMBER SEQUENCE • PLAY NOW</span></div>
+          <div class="game-card-body">
+            <div class="game-title-row"><h3>Number Sequence</h3><span class="game-number">18</span></div>
+            <p>Find the missing number in a sequence.</p>
+            <div class="game-meta"><span>♟ 1 player</span><span>⚡ Replay anytime</span></div>
+            <button class="button button-primary game-launch" data-game="sequence" type="button">PLAY GAME <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+        <article class="game-card">
+          <div class="game-art number-art"><span class="art-tag">GAME ICON</span><div class="number-preview game-logo" role="img" aria-label="Direction Dash logo">🧭</div><span class="art-bottom">DIRECTION DASH • PLAY NOW</span></div>
+          <div class="game-card-body">
+            <div class="game-title-row"><h3>Direction Dash</h3><span class="game-number">19</span></div>
+            <p>Follow the direction prompt quickly.</p>
+            <div class="game-meta"><span>♟ 1 player</span><span>⚡ Replay anytime</span></div>
+            <button class="button button-primary game-launch" data-game="direction" type="button">PLAY GAME <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+        <article class="game-card">
+          <div class="game-art number-art"><span class="art-tag">GAME ICON</span><div class="number-preview game-logo" role="img" aria-label="Emoji Quiz logo">😎</div><span class="art-bottom">EMOJI QUIZ • PLAY NOW</span></div>
+          <div class="game-card-body">
+            <div class="game-title-row"><h3>Emoji Quiz</h3><span class="game-number">20</span></div>
+            <p>Guess the word from emoji clues.</p>
+            <div class="game-meta"><span>♟ 1 player</span><span>⚡ Replay anytime</span></div>
+            <button class="button button-primary game-launch" data-game="emoji" type="button">PLAY GAME <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+        <article class="game-card">
+          <div class="game-art number-art"><span class="art-tag">GAME ICON</span><div class="number-preview game-logo" role="img" aria-label="Safe Cracker logo">🔐</div><span class="art-bottom">SAFE CRACKER • PLAY NOW</span></div>
+          <div class="game-card-body">
+            <div class="game-title-row"><h3>Safe Cracker</h3><span class="game-number">21</span></div>
+            <p>Crack the 3-digit code using hints.</p>
+            <div class="game-meta"><span>♟ 1 player</span><span>⚡ Replay anytime</span></div>
+            <button class="button button-primary game-launch" data-game="safe" type="button">PLAY GAME <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+        <article class="game-card">
+          <div class="game-art number-art"><span class="art-tag">GAME ICON</span><div class="number-preview game-logo" role="img" aria-label="Treasure Hunt logo">💎</div><span class="art-bottom">TREASURE HUNT • PLAY NOW</span></div>
+          <div class="game-card-body">
+            <div class="game-title-row"><h3>Treasure Hunt</h3><span class="game-number">22</span></div>
+            <p>Choose doors and find the hidden treasure.</p>
+            <div class="game-meta"><span>♟ 1 player</span><span>⚡ Replay anytime</span></div>
+            <button class="button button-primary game-launch" data-game="treasure" type="button">PLAY GAME <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+        <article class="game-card">
+          <div class="game-art number-art"><span class="art-tag">ARCADE CHALLENGE</span><div class="number-preview game-logo" role="img" aria-label="Puzzle Solver logo">🧩</div><span class="art-bottom">LOGIC • THINK • SOLVE</span></div>
+          <div class="game-card-body">
+            <div class="game-title-row"><h3>Puzzle Solver</h3><span class="game-number">23</span></div>
+            <p>Solve a quick logic puzzle.</p>
+            <div class="game-meta"><span>♟ 1 player</span><span>⚡ Replay anytime</span></div>
+            <button class="button button-primary game-launch" data-game="puzzle" type="button">PLAY GAME <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+        <article class="game-card">
+          <div class="game-art number-art"><span class="art-tag">ARCADE CHALLENGE</span><div class="number-preview game-logo" role="img" aria-label="Pong Reflex logo">🏓</div><span class="art-bottom">REFLEX • AIM • WIN</span></div>
+          <div class="game-card-body">
+            <div class="game-title-row"><h3>Pong Reflex</h3><span class="game-number">24</span></div>
+            <p>Choose the correct side to return the ball.</p>
+            <div class="game-meta"><span>♟ 1 player</span><span>⚡ Replay anytime</span></div>
+            <button class="button button-primary game-launch" data-game="pong" type="button">PLAY GAME <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+        <article class="game-card">
+          <div class="game-art number-art"><span class="art-tag">ARCADE CHALLENGE</span><div class="number-preview game-logo" role="img" aria-label="Space Dodge logo">🚀</div><span class="art-bottom">SPACE • DODGE • SURVIVE</span></div>
+          <div class="game-card-body">
+            <div class="game-title-row"><h3>Space Dodge</h3><span class="game-number">25</span></div>
+            <p>Make the right move to dodge an asteroid.</p>
+            <div class="game-meta"><span>♟ 1 player</span><span>⚡ Replay anytime</span></div>
+            <button class="button button-primary game-launch" data-game="space" type="button">PLAY GAME <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+        <article class="game-card">
+          <div class="game-art number-art"><span class="art-tag">ARCADE CHALLENGE</span><div class="number-preview game-logo" role="img" aria-label="Snake Choice logo">🐍</div><span class="art-bottom">SLITHER • PLAN • SCORE</span></div>
+          <div class="game-card-body">
+            <div class="game-title-row"><h3>Snake Choice</h3><span class="game-number">26</span></div>
+            <p>Choose the direction to guide your snake.</p>
+            <div class="game-meta"><span>♟ 1 player</span><span>⚡ Replay anytime</span></div>
+            <button class="button button-primary game-launch" data-game="snake" type="button">PLAY GAME <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+        <article class="game-card">
+          <div class="game-art number-art"><span class="art-tag">ARCADE CHALLENGE</span><div class="number-preview game-logo" role="img" aria-label="Brick Breaker Quiz logo">🧱</div><span class="art-bottom">BREAK • BRICKS • WIN</span></div>
+          <div class="game-card-body">
+            <div class="game-title-row"><h3>Brick Breaker Quiz</h3><span class="game-number">27</span></div>
+            <p>Answer to smash the next brick.</p>
+            <div class="game-meta"><span>♟ 1 player</span><span>⚡ Replay anytime</span></div>
+            <button class="button button-primary game-launch" data-game="brick" type="button">PLAY GAME <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+        <article class="game-card">
+          <div class="game-art number-art"><span class="art-tag">ARCADE CHALLENGE</span><div class="number-preview game-logo" role="img" aria-label="Racing Reflex logo">🏁</div><span class="art-bottom">READY • SET • GO</span></div>
+          <div class="game-card-body">
+            <div class="game-title-row"><h3>Racing Reflex</h3><span class="game-number">28</span></div>
+            <p>React to the race signal.</p>
+            <div class="game-meta"><span>♟ 1 player</span><span>⚡ Replay anytime</span></div>
+            <button class="button button-primary game-launch" data-game="racing" type="button">PLAY GAME <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+        <article class="game-card">
+          <div class="game-art number-art"><span class="art-tag">ARCADE CHALLENGE</span><div class="number-preview game-logo" role="img" aria-label="Knight Quest logo">🛡️</div><span class="art-bottom">QUEST • COURAGE • WIN</span></div>
+          <div class="game-card-body">
+            <div class="game-title-row"><h3>Knight Quest</h3><span class="game-number">29</span></div>
+            <p>Choose the right action for the knight.</p>
+            <div class="game-meta"><span>♟ 1 player</span><span>⚡ Replay anytime</span></div>
+            <button class="button button-primary game-launch" data-game="knight" type="button">PLAY GAME <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+        <article class="game-card">
+          <div class="game-art number-art"><span class="art-tag">ARCADE CHALLENGE</span><div class="number-preview game-logo" role="img" aria-label="Volcano Escape logo">🌋</div><span class="art-bottom">ESCAPE • THINK • RUN</span></div>
+          <div class="game-card-body">
+            <div class="game-title-row"><h3>Volcano Escape</h3><span class="game-number">30</span></div>
+            <p>Solve the escape question before time runs out.</p>
+            <div class="game-meta"><span>♟ 1 player</span><span>⚡ Replay anytime</span></div>
+            <button class="button button-primary game-launch" data-game="volcano" type="button">PLAY GAME <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+        <article class="game-card">
+          <div class="game-art number-art"><span class="art-tag">ARCADE CHALLENGE</span><div class="number-preview game-logo" role="img" aria-label="Animal Quiz logo">🦉</div><span class="art-bottom">GUESS • ANIMALS • PLAY</span></div>
+          <div class="game-card-body">
+            <div class="game-title-row"><h3>Animal Quiz</h3><span class="game-number">31</span></div>
+            <p>Identify the animal from a clue.</p>
+            <div class="game-meta"><span>♟ 1 player</span><span>⚡ Replay anytime</span></div>
+            <button class="button button-primary game-launch" data-game="animal" type="button">PLAY GAME <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+        <article class="game-card">
+          <div class="game-art number-art"><span class="art-tag">ARCADE CHALLENGE</span><div class="number-preview game-logo" role="img" aria-label="World Explorer logo">🌍</div><span class="art-bottom">EXPLORE • LEARN • WIN</span></div>
+          <div class="game-card-body">
+            <div class="game-title-row"><h3>World Explorer</h3><span class="game-number">32</span></div>
+            <p>Answer a world geography question.</p>
+            <div class="game-meta"><span>♟ 1 player</span><span>⚡ Replay anytime</span></div>
+            <button class="button button-primary game-launch" data-game="world" type="button">PLAY GAME <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+        <article class="game-card">
+          <div class="game-art number-art"><span class="art-tag">ARCADE CHALLENGE</span><div class="number-preview game-logo" role="img" aria-label="Code Breaker logo">🔐</div><span class="art-bottom">DECODE • CRACK • WIN</span></div>
+          <div class="game-card-body">
+            <div class="game-title-row"><h3>Code Breaker</h3><span class="game-number">33</span></div>
+            <p>Crack a short secret code.</p>
+            <div class="game-meta"><span>♟ 1 player</span><span>⚡ Replay anytime</span></div>
+            <button class="button button-primary game-launch" data-game="code" type="button">PLAY GAME <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+        <article class="game-card">
+          <div class="game-art number-art"><span class="art-tag">ARCADE CHALLENGE</span><div class="number-preview game-logo" role="img" aria-label="Soundless Music Quiz logo">🎵</div><span class="art-bottom">MUSIC • GUESS • PLAY</span></div>
+          <div class="game-card-body">
+            <div class="game-title-row"><h3>Soundless Music Quiz</h3><span class="game-number">34</span></div>
+            <p>Guess the music instrument from its emoji clue.</p>
+            <div class="game-meta"><span>♟ 1 player</span><span>⚡ Replay anytime</span></div>
+            <button class="button button-primary game-launch" data-game="music" type="button">PLAY GAME <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+        <article class="game-card">
+          <div class="game-art number-art"><span class="art-tag">ARCADE CHALLENGE</span><div class="number-preview game-logo" role="img" aria-label="Penalty Shootout logo">⚽</div><span class="art-bottom">SHOOT • SCORE • WIN</span></div>
+          <div class="game-card-body">
+            <div class="game-title-row"><h3>Penalty Shootout</h3><span class="game-number">35</span></div>
+            <p>Choose a corner for your penalty shot.</p>
+            <div class="game-meta"><span>♟ 1 player</span><span>⚡ Replay anytime</span></div>
+            <button class="button button-primary game-launch" data-game="penalty" type="button">PLAY GAME <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+        <article class="game-card">
+          <div class="game-art number-art"><span class="art-tag">ARCADE CHALLENGE</span><div class="number-preview game-logo" role="img" aria-label="Basket Toss logo">🏀</div><span class="art-bottom">AIM • TOSS • SCORE</span></div>
+          <div class="game-card-body">
+            <div class="game-title-row"><h3>Basket Toss</h3><span class="game-number">36</span></div>
+            <p>Pick the best shot to score points.</p>
+            <div class="game-meta"><span>♟ 1 player</span><span>⚡ Replay anytime</span></div>
+            <button class="button button-primary game-launch" data-game="basket" type="button">PLAY GAME <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+        <article class="game-card">
+          <div class="game-art number-art"><span class="art-tag">ARCADE CHALLENGE</span><div class="number-preview game-logo" role="img" aria-label="Garden Match logo">🌱</div><span class="art-bottom">GROW • MATCH • PLAY</span></div>
+          <div class="game-card-body">
+            <div class="game-title-row"><h3>Garden Match</h3><span class="game-number">37</span></div>
+            <p>Pick the item that belongs in a garden.</p>
+            <div class="game-meta"><span>♟ 1 player</span><span>⚡ Replay anytime</span></div>
+            <button class="button button-primary game-launch" data-game="garden" type="button">PLAY GAME <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+        <article class="game-card">
+          <div class="game-art number-art"><span class="art-tag">ARCADE CHALLENGE</span><div class="number-preview game-logo" role="img" aria-label="Science Sprint logo">🧪</div><span class="art-bottom">THINK • DISCOVER • WIN</span></div>
+          <div class="game-card-body">
+            <div class="game-title-row"><h3>Science Sprint</h3><span class="game-number">38</span></div>
+            <p>Answer a quick science question.</p>
+            <div class="game-meta"><span>♟ 1 player</span><span>⚡ Replay anytime</span></div>
+            <button class="button button-primary game-launch" data-game="science" type="button">PLAY GAME <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+        <article class="game-card">
+          <div class="game-art number-art"><span class="art-tag">ARCADE CHALLENGE</span><div class="number-preview game-logo" role="img" aria-label="Detective Clue logo">🕵️</div><span class="art-bottom">CLUES • LOGIC • SOLVE</span></div>
+          <div class="game-card-body">
+            <div class="game-title-row"><h3>Detective Clue</h3><span class="game-number">39</span></div>
+            <p>Use the clue to solve the mystery.</p>
+            <div class="game-meta"><span>♟ 1 player</span><span>⚡ Replay anytime</span></div>
+            <button class="button button-primary game-launch" data-game="detective" type="button">PLAY GAME <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+        <article class="game-card">
+          <div class="game-art number-art"><span class="art-tag">ARCADE CHALLENGE</span><div class="number-preview game-logo" role="img" aria-label="Balloon Pop logo">🎈</div><span class="art-bottom">POP • SCORE • REPEAT</span></div>
+          <div class="game-card-body">
+            <div class="game-title-row"><h3>Balloon Pop</h3><span class="game-number">40</span></div>
+            <p>Pick the balloon with the highest points.</p>
+            <div class="game-meta"><span>♟ 1 player</span><span>⚡ Replay anytime</span></div>
+            <button class="button button-primary game-launch" data-game="balloon" type="button">PLAY GAME <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="about-section section-wrap" id="about">
+      <p class="eyebrow">MADE FOR PLAYERS</p>
+      <h2>SMALL GAMES. <span>BIG FUN.</span></h2>
+      <p>Gaming World is a beginner-built arcade. More games and features can be added as you learn.</p>
+    </section>
+  </main>
+
+  <footer class="site-footer"><a class="logo" href="#home"><span class="logo-mark">G</span> GAMING <span>WORLD</span></a><p>Built with HTML, CSS & JavaScript.</p></footer>
+
+  <!-- Account demo panel -->
+  <div class="modal-backdrop hidden" id="accountModal" role="dialog" aria-modal="true" aria-labelledby="accountHeading">
+    <div class="modal-panel">
+      <button class="modal-close" id="closeAccountModal" type="button" aria-label="Close account panel">×</button>
+      <p class="eyebrow">PLAYER ACCESS</p>
+      <h2 id="accountHeading">WELCOME <span>PLAYER</span></h2>
+      <p class="auth-notice">Log in or create an account to enter Gaming World. Games stay locked until you sign in.</p>
+      <div class="tab-row">
+        <button class="tab-button active" data-tab="login" type="button">Log in</button>
+        <button class="tab-button" data-tab="signup" type="button">Sign up</button>
+      </div>
+      <form id="loginForm" class="account-form">
+        <label for="loginUsername">Username</label><input id="loginUsername" name="username" autocomplete="username" required maxlength="20" placeholder="Your username">
+        <label for="loginPassword">Password</label><input id="loginPassword" name="password" type="password" autocomplete="current-password" required placeholder="Your password">
+        <button class="button button-primary full-width" type="submit">LOG IN</button>
+      </form>
+      <form id="signupForm" class="account-form hidden">
+        <label for="signupUsername">Choose a username</label><input id="signupUsername" name="username" autocomplete="username" required minlength="3" maxlength="20" placeholder="3–20 characters">
+        <label for="signupPassword">Create a password</label><input id="signupPassword" name="password" type="password" autocomplete="new-password" required minlength="4" placeholder="At least 4 characters">
+        <button class="button button-primary full-width" type="submit">CREATE ACCOUNT</button>
+      </form>
+      <p class="form-message" id="accountMessage" role="status" aria-live="polite"></p>
+    </div>
+  </div>
+
+  <!-- Game modal -->
+  <div class="modal-backdrop hidden" id="gameModal" role="dialog" aria-modal="true" aria-labelledby="gameModalTitle">
+    <div class="modal-panel game-modal-panel">
+      <button class="modal-close" id="closeGameModal" type="button" aria-label="Close game">×</button>
+      <p class="eyebrow">GAMING WORLD ARCADE</p>
+      <h2 id="gameModalTitle">LET'S <span>PLAY</span></h2>
+
+      <section id="clickerGame" class="game-screen hidden" aria-label="Neon Clicker game">
+        <p class="game-instructions">Click the target as many times as possible in 20 seconds.</p>
+        <div class="score-board">
+          <div><span>TIME</span><strong id="clickerTime">20</strong></div>
+          <div><span>SCORE</span><strong id="clickerScore">0</strong></div>
+          <div><span>BEST</span><strong id="clickerBest">0</strong></div>
+        </div>
+        <button id="clickerStart" class="button button-primary full-width" type="button">START ROUND</button>
+        <button id="clickTarget" class="click-target" type="button" disabled aria-label="Click the glowing target">✦</button>
+        <p id="clickerMessage" class="game-message" role="status" aria-live="polite">Press Start Round when you're ready.</p>
+      </section>
+
+      <section id="extraGame" class="game-screen hidden" aria-label="Arcade mini game">
+        <p id="extraInstructions" class="game-instructions"></p>
+        <div id="extraPlayArea"></div>
+        <p id="extraMessage" class="game-message" role="status" aria-live="polite"></p>
+        <button id="extraRestart" class="button button-outline full-width" type="button">PLAY AGAIN</button>
+      </section>
+
+      <section id="numberGame" class="game-screen hidden" aria-label="Number Hunter game">
+        <p class="game-instructions">I'm thinking of a number between 1 and 100. Can you find it?</p>
+        <div class="score-board number-score">
+          <div><span>ATTEMPTS</span><strong id="guessAttempts">0</strong></div>
+          <div><span>BEST</span><strong id="guessBest">—</strong></div>
+        </div>
+        <form id="guessForm" class="guess-form">
+          <label for="guessInput">Your guess</label>
+          <div class="guess-controls"><input id="guessInput" type="number" min="1" max="100" required placeholder="1–100"><button class="button button-primary" type="submit">GUESS</button></div>
+        </form>
+        <p id="guessMessage" class="game-message" role="status" aria-live="polite">Enter a number to begin.</p>
+        <button id="newNumberGame" class="button button-outline full-width" type="button">NEW NUMBER</button>
+      </section>
+      <button id="replayCurrentGame" class="button button-outline full-width" type="button" style="margin-top:14px">🔄 PLAY ANOTHER ROUND</button>
+      <p class="game-message" style="text-align:center">You can replay any game as many times as you like!</p>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const accountModal = document.getElementById('accountModal');
+      const accountButton = document.getElementById('accountButton');
+      const logoutButton = document.getElementById('logoutButton');
+      const closeAccountModal = document.getElementById('closeAccountModal');
+      const welcomeText = document.getElementById('welcomeText');
+      const accountMessage = document.getElementById('accountMessage');
+      
+      const loginForm = document.getElementById('loginForm');
+      const signupForm = document.getElementById('signupForm');
+      const tabButtons = document.querySelectorAll('.tab-button');
+
+      tabButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          tabButtons.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          const targetTab = btn.getAttribute('data-tab');
+          if (targetTab === 'login') {
+            loginForm.classList.remove('hidden');
+            signupForm.classList.add('hidden');
+          } else {
+            loginForm.classList.add('hidden');
+            signupForm.classList.remove('hidden');
+          }
+          accountMessage.textContent = '';
+        });
+      });
+
+      accountButton.addEventListener('click', () => {
+        accountModal.classList.remove('hidden');
+        accountMessage.textContent = '';
+      });
+
+      closeAccountModal.addEventListener('click', () => {
+        if (!getCurrentUser()) return;
+        accountModal.classList.add('hidden');
+      });
+
+      // Require authentication on every fresh visit unless a player is already signed in.
+      function enforceLoginGate() {
+        const signedIn = Boolean(getCurrentUser());
+        document.body.classList.toggle('auth-required', !signedIn);
+        if (signedIn) {
+          accountModal.classList.add('hidden');
+          closeAccountModal.classList.remove('auth-lock');
+        } else {
+          accountModal.classList.remove('hidden');
+          closeAccountModal.classList.add('auth-lock');
+        }
+      }
+
+      function getUsers() {
+        return JSON.parse(localStorage.getItem('gaming_world_users')) || {};
+      }
+
+      function saveUsers(users) {
+        localStorage.setItem('gaming_world_users', JSON.stringify(users));
+      }
+
+      function getCurrentUser() {
+        return localStorage.getItem('gaming_world_current_user');
+      }
+
+      function setCurrentUser(username) {
+        if (username) {
+          localStorage.setItem('gaming_world_current_user', username);
+        } else {
+          localStorage.removeItem('gaming_world_current_user');
+        }
+        updateUIState();
+        enforceLoginGate();
+      }
+
+      function updateUIState() {
+        const currentUser = getCurrentUser();
+        if (currentUser) {
+          welcomeText.textContent = `👤 ${currentUser}`;
+          accountButton.classList.add('hidden');
+          logoutButton.classList.remove('hidden');
+        } else {
+          welcomeText.textContent = '';
+          accountButton.classList.remove('hidden');
+          logoutButton.classList.add('hidden');
+        }
+      }
+
+      signupForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const username = document.getElementById('signupUsername').value.trim();
+        const password = document.getElementById('signupPassword').value;
+
+        const users = getUsers();
+        if (users[username]) {
+          accountMessage.style.color = '#ff4d4d';
+          accountMessage.textContent = 'Username already exists. Please log in.';
+          return;
+        }
+
+        users[username] = { password, createdAt: new Date().toISOString() };
+        saveUsers(users);
+        setCurrentUser(username);
+
+        accountMessage.style.color = '#4dff4d';
+        accountMessage.textContent = 'Account created successfully!';
+        setTimeout(() => {
+          accountModal.classList.add('hidden');
+          signupForm.reset();
+        }, 800);
+      });
+
+      loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const username = document.getElementById('loginUsername').value.trim();
+        const password = document.getElementById('loginPassword').value;
+
+        const users = getUsers();
+        if (!users[username] || users[username].password !== password) {
+          accountMessage.style.color = '#ff4d4d';
+          accountMessage.textContent = 'Invalid username or password.';
+          return;
+        }
+
+        setCurrentUser(username);
+        accountMessage.style.color = '#4dff4d';
+        accountMessage.textContent = 'Logged in successfully!';
+        setTimeout(() => {
+          accountModal.classList.add('hidden');
+          loginForm.reset();
+        }, 800);
+      });
+
+      logoutButton.addEventListener('click', () => {
+        setCurrentUser(null);
+      });
+
+      updateUIState();
+      enforceLoginGate();
+
+      // Games Modal & Logic
+      const gameModal = document.getElementById('gameModal');
+      const closeGameModal = document.getElementById('closeGameModal');
+      const gameLaunchButtons = document.querySelectorAll('.game-launch');
+      const clickerGame = document.getElementById('clickerGame');
+      const numberGame = document.getElementById('numberGame');
+      const extraGame = document.getElementById('extraGame');
+      const extraInstructions = document.getElementById('extraInstructions');
+      const extraPlayArea = document.getElementById('extraPlayArea');
+      const extraMessage = document.getElementById('extraMessage');
+      let activeExtraGame = '';
+      const gameModalTitle = document.getElementById('gameModalTitle');
+
+      gameLaunchButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (!getCurrentUser()) {
+            accountModal.classList.remove('hidden');
+            accountMessage.textContent = 'Please log in or sign up before playing.';
+            enforceLoginGate();
+            return;
+          }
+          const gameType = btn.getAttribute('data-game');
+          gameModal.classList.remove('hidden');
+          clickerGame.classList.add('hidden');
+          numberGame.classList.add('hidden');
+          extraGame.classList.add('hidden');
+
+          if (gameType === 'clicker') {
+            gameModalTitle.innerHTML = 'NEON <span>CLICKER</span>';
+            clickerGame.classList.remove('hidden');
+          } else if (gameType === 'number') {
+            gameModalTitle.innerHTML = 'NUMBER <span>HUNTER</span>';
+            numberGame.classList.remove('hidden');
+          } else {
+            gameModalTitle.textContent = btn.closest('.game-card').querySelector('h3').textContent;
+            extraGame.classList.remove('hidden');
+            startExtraGame(gameType);
+          }
+        });
+      });
+
+      closeGameModal.addEventListener('click', () => {
+        gameModal.classList.add('hidden');
+      });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && !getCurrentUser()) {
+          accountModal.classList.remove('hidden');
+          gameModal.classList.add('hidden');
+        }
+      });
+
+
+      const extraTitles = {
+        puzzle:"Puzzle Solver",pong:"Pong Reflex",space:"Space Dodge",snake:"Snake Choice",brick:"Brick Breaker Quiz",racing:"Racing Reflex",knight:"Knight Quest",volcano:"Volcano Escape",animal:"Animal Quiz",world:"World Explorer",code:"Code Breaker",music:"Soundless Music Quiz",penalty:"Penalty Shootout",basket:"Basket Toss",garden:"Garden Match",science:"Science Sprint",detective:"Detective Clue",balloon:"Balloon Pop",memory:"Repeat the sequence",rps:"Rock Paper Scissors",math:"Quick Math",word:"Word Scramble",
+        color:"Color Challenge",typing:"Typing Sprint",higher:"Higher or Lower",dice:"Dice Duel",
+        coin:"Coin Flip Streak",odd:"Odd One Out",pattern:"Pattern Puzzle",reaction:"Reaction Test",
+        trivia:"Mini Trivia",anagram:"Anagram Arena",target21:"Target 21",sequence:"Number Sequence",
+        direction:"Direction Dash",emoji:"Emoji Quiz",safe:"Safe Cracker",treasure:"Treasure Hunt"
+      };
+      function startExtraGame(type) {
+        activeExtraGame=type; extraPlayArea.innerHTML=''; extraMessage.textContent='';
+        const button=(label,fn)=>{const b=document.createElement('button');b.className='button button-primary';b.style.margin='6px';b.textContent=label;b.onclick=fn;extraPlayArea.appendChild(b);return b;};
+        const say=(t)=>extraMessage.textContent=t;
+        const input=(placeholder='Your answer')=>{const x=document.createElement('input');x.placeholder=placeholder;x.style.cssText='padding:12px;border-radius:8px;width:100%;margin:8px 0';extraPlayArea.appendChild(x);return x;};
+        const submit=(fn)=>button('SUBMIT',()=>fn());
+        const choose=(prompt,options,answer,success='Correct! You win!')=>{extraInstructions.textContent=prompt;options.forEach(o=>button(o,()=>say(String(o).toLowerCase()===String(answer).toLowerCase()?success:'Not quite—try again!')));};
+        const quizBanks = {
+          trivia:[
+            {q:'Which planet is known as the Red Planet?',o:['Venus','Mars','Jupiter'],a:'Mars'},
+            {q:'How many sides does a hexagon have?',o:['Five','Six','Eight'],a:'Six'},
+            {q:'Which is the largest mammal?',o:['Blue whale','Elephant','Giraffe'],a:'Blue whale'},
+            {q:'What is the capital of Japan?',o:['Seoul','Tokyo','Bangkok'],a:'Tokyo'},
+            {q:'How many minutes are in one hour?',o:['30','60','100'],a:'60'},
+            {q:'Which gas do plants absorb?',o:['Oxygen','Carbon dioxide','Helium'],a:'Carbon dioxide'}
+          ],
+          emoji:[
+            {q:'Which animal? 🐝 🍯',o:['Bee','Cat','Fish'],a:'Bee'},
+            {q:'Guess the phrase: 🦁👑',o:['The Lion King','Jungle Book','Finding Nemo'],a:'The Lion King'},
+            {q:'Which food? 🍕',o:['Pizza','Cake','Soup'],a:'Pizza'},
+            {q:'Guess the weather: ☀️🌡️',o:['Sunny and hot','Snowy','Windy'],a:'Sunny and hot'},
+            {q:'Which transport? ✈️',o:['Airplane','Bicycle','Boat'],a:'Airplane'}
+          ],
+          color:[
+            {q:'Choose the color of the sky on a clear day.',o:['Blue','Green','Red'],a:'Blue'},
+            {q:'Mixing red and yellow makes which color?',o:['Purple','Orange','Green'],a:'Orange'},
+            {q:'Which is usually a leaf color?',o:['Green','Pink','Blue'],a:'Green'},
+            {q:'What color do you get from blue + yellow?',o:['Green','Red','Black'],a:'Green'}
+          ],
+          animal:[
+            {q:'Which animal has black and white stripes?',o:['Zebra','Tiger','Giraffe'],a:'Zebra'},
+            {q:'Which animal is known as the king of the jungle?',o:['Lion','Rabbit','Panda'],a:'Lion'},
+            {q:'Which animal can usually fly?',o:['Eagle','Elephant','Horse'],a:'Eagle'},
+            {q:'What is a baby dog called?',o:['Kitten','Puppy','Calf'],a:'Puppy'},
+            {q:'Which animal carries its home on its back?',o:['Turtle','Fox','Monkey'],a:'Turtle'}
+          ],
+          world:[
+            {q:'Which is the largest ocean?',o:['Pacific','Indian','Arctic'],a:'Pacific'},
+            {q:'What is the capital of Japan?',o:['Tokyo','Beijing','Delhi'],a:'Tokyo'},
+            {q:'Which country is famous for the pyramids of Giza?',o:['Egypt','Brazil','Canada'],a:'Egypt'},
+            {q:'Which continent is the Sahara Desert in?',o:['Africa','Europe','Australia'],a:'Africa'},
+            {q:'Which is the smallest continent?',o:['Australia','Asia','Africa'],a:'Australia'}
+          ],
+          brick:[
+            {q:'Answer correctly to break the brick: 9 × 7 = ?',o:['63','56','72'],a:'63'},
+            {q:'12 × 4 = ?',o:['48','36','42'],a:'48'},
+            {q:'What is 81 ÷ 9?',o:['8','9','7'],a:'9'},
+            {q:'What is 25 + 17?',o:['42','41','43'],a:'42'}
+          ],
+          music:[
+            {q:'Which instrument has black and white keys?',o:['Piano 🎹','Drum 🥁','Flute 🪈'],a:'Piano 🎹'},
+            {q:'Which instrument usually has six strings?',o:['Guitar','Trumpet','Violin'],a:'Guitar'},
+            {q:'Which family does a trumpet belong to?',o:['Brass','Percussion','Keyboard'],a:'Brass'},
+            {q:'Which instrument do you strike with sticks?',o:['Drums','Flute','Harp'],a:'Drums'}
+          ],
+          basket:[
+            {q:'Which shot is usually worth more in basketball?',o:['Three-pointer','Free throw','Pass'],a:'Three-pointer'},
+            {q:'How many players per team are on court in standard basketball?',o:['Five','Six','Seven'],a:'Five'},
+            {q:'What do players try to score the ball through?',o:['Hoop','Goalpost','Net on the floor'],a:'Hoop'}
+          ],
+          garden:[
+            {q:'Which item helps a plant grow?',o:['Water','Plastic','Sandwich'],a:'Water'},
+            {q:'Which part of a plant usually absorbs water?',o:['Roots','Flower','Fruit'],a:'Roots'},
+            {q:'What do plants need from the Sun?',o:['Light','Music','Plastic'],a:'Light'}
+          ],
+          science:[
+            {q:'Which planet is closest to the Sun?',o:['Mercury','Earth','Mars'],a:'Mercury'},
+            {q:'What is H₂O commonly called?',o:['Water','Salt','Oxygen'],a:'Water'},
+            {q:'Which force pulls objects toward Earth?',o:['Gravity','Magnetism','Friction'],a:'Gravity'},
+            {q:'At sea level, water boils at about what temperature?',o:['100°C','50°C','150°C'],a:'100°C'}
+          ],
+          detective:[
+            {q:'I have hands but cannot clap. What am I?',o:['Clock','Robot','Tree'],a:'Clock'},
+            {q:'I have pages but am not a website. What am I?',o:['Book','Window','Shoe'],a:'Book'},
+            {q:'The more you take, the more you leave behind. What are they?',o:['Footsteps','Coins','Photos'],a:'Footsteps'},
+            {q:'I have a neck but no head. What am I?',o:['Bottle','Chair','Cloud'],a:'Bottle'}
+          ],
+          puzzle:[
+            {q:'I have keys but no locks, space but no room. What am I?',o:['Keyboard','Map','House'],a:'Keyboard'},
+            {q:'What has to be broken before you can use it?',o:['Egg','Plate','Pencil'],a:'Egg'},
+            {q:'What has one eye but cannot see?',o:['Needle','Storm','Potato'],a:'Needle'},
+            {q:'What gets wetter the more it dries?',o:['Towel','Sun','Paper'],a:'Towel'}
+          ],
+          code:[
+            {q:'Decode the pattern: 2, 4, 6, ?',o:['8','9','12'],a:'8'},
+            {q:'What comes next: 5, 10, 15, ?',o:['20','25','18'],a:'20'},
+            {q:'If A=1, B=2, what is D?',o:['3','4','5'],a:'4'}
+          ]
+        };
+        if (quizBanks[type]) {
+          let round = 0, points = 0;
+          const showQuestion = () => {
+            extraPlayArea.innerHTML = '';
+            extraMessage.textContent = '';
+            const bank = quizBanks[type];
+            const q = bank[Math.floor(Math.random()*bank.length)];
+            round++;
+            extraInstructions.textContent = `Question ${round} · Score ${points} — ${q.q}`;
+            q.o.forEach(option => button(option, () => {
+              [...extraPlayArea.querySelectorAll('button')].forEach(b => b.disabled = true);
+              if (option === q.a) { points++; say(`Correct! 🎉 Score: ${points}`); }
+              else { say(`Not quite! Correct answer: ${q.a} · Score: ${points}`); }
+              button('NEXT QUESTION →', showQuestion);
+            }));
+          };
+          showQuestion();
+          return;
+        }
+        extraInstructions.textContent=extraTitles[type]||'Arcade challenge';
+        if(type==='rps'){choose('Pick your move.',['Rock','Paper','Scissors'],['Rock','Paper','Scissors'][Math.floor(Math.random()*3)]);return;}
+        if(type==='math'){let a= Math.ceil(Math.random()*30),b=Math.ceil(Math.random()*20),ans=a+b;extraInstructions.textContent=`What is ${a} + ${b}?`;let x=input('Answer');submit(()=>say(Number(x.value)===ans?'Correct! Great maths!':'Not correct—try another round.'));return;}
+        if(type==='word'||type==='anagram'){let words=['PLANET','GARDEN','PUZZLE','ORANGE','ROCKET','SILVER'];let w=words[Math.floor(Math.random()*words.length)],mix=w.split('').sort(()=>Math.random()-.5).join('');extraInstructions.textContent=`Unscramble: ${mix}`;let x=input('Word');submit(()=>say(x.value.trim().toUpperCase()===w?'Brilliant! Correct word.':`Not quite. The word was ${w}.`));return;}
+        if(type==='typing'){let w=['galaxy','arcade','victory','puzzle','gaming'][Math.floor(Math.random()*5)];extraInstructions.textContent=`Type this word exactly: ${w}`;let x=input('Type here');submit(()=>say(x.value===w?'Perfect typing!':'That did not match—try again.'));return;}
+        if(type==='higher'){let n=Math.ceil(Math.random()*50);extraInstructions.textContent=`Current number: ${n}. Will the next number be higher or lower?`;button('Higher',()=>say(Math.random()>.5?'Correct guess!':'Wrong guess this time.'));button('Lower',()=>say(Math.random()>.5?'Wrong guess this time.':'Correct guess!'));return;}
+        if(type==='dice'){let you=1+Math.floor(Math.random()*6),cpu=1+Math.floor(Math.random()*6);button('ROLL DICE',()=>say(`You rolled ${you}; computer rolled ${cpu}. ${you===cpu?'It is a tie!':you>cpu?'You win!':'Computer wins!'}`));return;}
+        if(type==='coin'){let ans=Math.random()<.5?'Heads':'Tails';choose('Predict the coin flip.',['Heads','Tails'],ans);return;}
+        if(type==='odd'){choose('Which one is different?',['Apple','Banana','Carrot','Mango'],'Carrot');return;}
+        if(type==='pattern'||type==='sequence'){let n=2+Math.floor(Math.random()*8),ans=n*2;extraInstructions.textContent=`Find the next number: ${n}, ${n*2}, ${n*3}, ?`;let x=input('Next number');submit(()=>say(Number(x.value)===n*4?'Correct pattern!':`The answer was ${n*4}.`));return;}
+        if(type==='color'){choose('Choose the color of the sky on a clear day.',['Blue','Green','Red'],'Blue');return;}
+        if(type==='trivia'){choose('Which planet is known as the Red Planet?',['Venus','Mars','Jupiter'],'Mars');return;}
+        if(type==='emoji'){choose('Which animal? 🐝 🍯',['Bee','Cat','Fish'],'Bee');return;}
+        if(type==='direction'){let d=['UP','DOWN','LEFT','RIGHT'][Math.floor(Math.random()*4)];extraInstructions.textContent=`Press the matching direction: ${d}`;button(d,()=>say('Nice reaction! You followed the direction.'));return;}
+        if(type==='reaction'){extraInstructions.textContent='Click when you are ready to test your reaction.';button('CLICK!',()=>say(`You reacted in ${Math.floor(200+Math.random()*500)} ms! Play again to improve.`));return;}
+        if(type==='memory'){let seq=Array.from({length:3},()=>1+Math.floor(Math.random()*4));extraInstructions.textContent=`Memorize this sequence: ${seq.join(' – ')}. Then enter it below.`;let x=input('Sequence, e.g. 1 2 3');submit(()=>say(x.value.trim().replace(/[, -]+/g,' ')===seq.join(' ')?'Excellent memory!':'Sequence did not match.'));return;}
+        if(type==='target21'){let total=0;extraInstructions.textContent='Press DRAW to add cards. Get as close to 21 as possible without going over.';button('DRAW',()=>{total+=1+Math.floor(Math.random()*10);say(`Your total: ${total}${total>21?' — bust!':total===21?' — perfect 21!':''}`);});button('STOP',()=>say(`You stopped at ${total}. ${total>0&&total<=21?'Round complete!':'Try drawing first.'}`));return;}
+        if(type==='safe'){let ans=String(100+Math.floor(Math.random()*900));extraInstructions.textContent='Crack the 3-digit safe code. Hint: it is between 100 and 999.';let x=input('3-digit code');submit(()=>say(x.value===ans?'Safe cracked!':`Incorrect code. Hint: the code starts with ${ans[0]}.`));return;}
+        if(type==='treasure'){let treasure=Math.floor(Math.random()*3);extraInstructions.textContent='Pick one of three doors to find the treasure.';['Door 1','Door 2','Door 3'].forEach((d,i)=>button(d,()=>say(i===treasure?'🏆 Treasure found!':'Empty room! Try again.')));return;}
+        const challenge={
+          puzzle:{q:'I have keys but no locks, space but no room. What am I?',opts:['Keyboard','Map','House'],a:'Keyboard'},
+          pong:{q:'The ball is coming from the LEFT. Which side should you move to meet it?',opts:['LEFT','RIGHT','STAY'],a:'LEFT'},
+          space:{q:'An asteroid is directly ahead. Choose a move!',opts:['Dodge left','Keep still','Close eyes'],a:'Dodge left'},
+          snake:{q:'Food is above your snake. Which direction?',opts:['UP','DOWN','RIGHT'],a:'UP'},
+          brick:{q:'Answer correctly to break the brick: 9 × 7 = ?',opts:['63','56','72'],a:'63'},
+          racing:{q:'The green light is on! What should you do?',opts:['GO!','STOP!','SLEEP'],a:'GO!'},
+          knight:{q:'A dragon guards the bridge. What helps most?',opts:['Use a shield','Drop your map','Ignore it'],a:'Use a shield'},
+          volcano:{q:'The safe path is marked with arrows. What should you follow?',opts:['The arrows','The smoke','Random paths'],a:'The arrows'},
+          animal:{q:'Which animal is known for its black and white stripes?',opts:['Zebra','Tiger','Giraffe'],a:'Zebra'},
+          world:{q:'Which is the largest ocean?',opts:['Pacific','Indian','Arctic'],a:'Pacific'},
+          code:{q:'Decode the pattern: 2, 4, 6, ?',opts:['8','9','12'],a:'8'},
+          music:{q:'Which instrument has black and white keys?',opts:['Piano 🎹','Drum 🥁','Flute 🪈'],a:'Piano 🎹'},
+          penalty:{q:'Choose a corner to shoot at the goal!',opts:['LEFT','CENTER','RIGHT'],a:['LEFT','CENTER','RIGHT'][Math.floor(Math.random()*3)]},
+          basket:{q:'Which shot is usually worth more in basketball?',opts:['Three-pointer','Free throw','Pass'],a:'Three-pointer'},
+          garden:{q:'Which item helps a plant grow?',opts:['Water','Plastic','Sandwich'],a:'Water'},
+          science:{q:'Which planet is closest to the Sun?',opts:['Mercury','Earth','Mars'],a:'Mercury'},
+          detective:{q:'Clue: I have hands but cannot clap. What am I?',opts:['Clock','Robot','Tree'],a:'Clock'},
+          balloon:{q:'Pick a balloon to pop for points!',opts:['🎈 +10','🎈 +20','🎈 +50'],a:['🎈 +10','🎈 +20','🎈 +50'][Math.floor(Math.random()*3)]}
+        };
+        if(challenge[type]){const c=challenge[type];choose(c.q,c.opts,c.a,'🎉 Correct! Challenge completed!');return;}
+      }
+      document.getElementById('extraRestart').addEventListener('click',()=>startExtraGame(activeExtraGame));
+      // Replay any game repeatedly without leaving the website.
+      document.getElementById('replayCurrentGame').addEventListener('click', () => {
+        if (!getCurrentUser()) {
+          gameModal.classList.add('hidden');
+          accountModal.classList.remove('hidden');
+          enforceLoginGate();
+          return;
+        }
+        if (activeGameType === 'clicker') {
+          clearInterval(clickerInterval);
+          timeLeft = 20;
+          score = 0;
+          clickerActive = false;
+          clickerTime.textContent = '20';
+          clickerScore.textContent = '0';
+          clickTarget.setAttribute('disabled', 'true');
+          clickerStart.removeAttribute('disabled');
+          clickTarget.style.left = '0px';
+          clickTarget.style.top = '0px';
+          clickerMessage.textContent = 'Ready for another round! Press START ROUND.';
+        } else if (activeGameType === 'number') {
+          secretNumber = Math.floor(Math.random() * 100) + 1;
+          attempts = 0;
+          guessAttempts.textContent = '0';
+          guessInput.value = '';
+          guessMessage.textContent = 'A new number is ready. Start guessing!';
+          guessMessage.style.color = '#fff';
+        } else if (activeGameType) {
+          startExtraGame(activeGameType);
+        }
+      });
+
+      let clickerInterval;
+      let timeLeft = 20;
+      let score = 0;
+      let clickerActive = false;
+      const clickerStart = document.getElementById('clickerStart');
+      const clickTarget = document.getElementById('clickTarget');
+      const clickerTime = document.getElementById('clickerTime');
+      const clickerScore = document.getElementById('clickerScore');
+      const clickerBest = document.getElementById('clickerBest');
+      const clickerMessage = document.getElementById('clickerMessage');
+
+      clickerStart.addEventListener('click', () => {
+        timeLeft = 20;
+        score = 0;
+        clickerActive = true;
+        clickerTime.textContent = timeLeft;
+        clickerScore.textContent = score;
+        clickTarget.removeAttribute('disabled');
+        clickerStart.setAttribute('disabled', 'true');
+        clickerMessage.textContent = 'Game started! Tap the target!';
+
+        moveTarget();
+
+        clickerInterval = setInterval(() => {
+          timeLeft--;
+          clickerTime.textContent = timeLeft;
+          if (timeLeft <= 0) {
+            clearInterval(clickerInterval);
+            clickerActive = false;
+            clickTarget.setAttribute('disabled', 'true');
+            clickerStart.removeAttribute('disabled');
+            clickerMessage.textContent = `Time's up! Final Score: ${score}`;
+            let best = parseInt(clickerBest.textContent) || 0;
+            if (score > best) clickerBest.textContent = score;
+          }
+        }, 1000);
+      });
+
+      function moveTarget() {
+        if (!clickerActive) return;
+        const randomX = Math.floor(Math.random() * 80);
+        const randomY = Math.floor(Math.random() * 80);
+        clickTarget.style.position = 'relative';
+        clickTarget.style.left = `${randomX - 40}px`;
+        clickTarget.style.top = `${randomY - 40}px`;
+      }
+
+      clickTarget.addEventListener('click', () => {
+        if (!clickerActive) return;
+        score++;
+        clickerScore.textContent = score;
+        moveTarget();
+      });
+
+      let secretNumber = Math.floor(Math.random() * 100) + 1;
+      let attempts = 0;
+      const guessForm = document.getElementById('guessForm');
+      const guessInput = document.getElementById('guessInput');
+      const guessMessage = document.getElementById('guessMessage');
+      const guessAttempts = document.getElementById('guessAttempts');
+      const guessBest = document.getElementById('guessBest');
+      const newNumberGame = document.getElementById('newNumberGame');
+
+      guessForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const guess = parseInt(guessInput.value);
+        attempts++;
+        guessAttempts.textContent = attempts;
+
+        if (guess === secretNumber) {
+          guessMessage.style.color = '#4dff4d';
+          guessMessage.textContent = `🎉 Correct! The number was ${secretNumber}. Found in ${attempts} attempts!`;
+          let currentBest = guessBest.textContent === '—' ? Infinity : parseInt(guessBest.textContent);
+          if (attempts < currentBest) {
+            guessBest.textContent = attempts;
+          }
+        } else if (guess < secretNumber) {
+          guessMessage.style.color = '#fff';
+          guessMessage.textContent = 'Too low! Try a higher number.';
+        } else {
+          guessMessage.style.color = '#fff';
+          guessMessage.textContent = 'Too high! Try a lower number.';
+        }
+        guessInput.value = '';
+      });
+
+      newNumberGame.addEventListener('click', () => {
+        secretNumber = Math.floor(Math.random() * 100) + 1;
+        attempts = 0;
+        guessAttempts.textContent = attempts;
+        guessMessage.textContent = 'New number generated! Enter your guess.';
+        guessMessage.style.color = '#fff';
+      });
+    });
+  </script>
+</body>
+</html>
